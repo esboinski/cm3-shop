@@ -27,6 +27,17 @@ CM3 Shop é uma **loja fictícia** desenvolvida para fins educativos e experimen
 * **Responsividade**: O design é adaptável para diferentes dispositivos, como desktop, tablet e celular
 
 ## Galeria
+<details><summary><b>Login</b></summary>
+   
+![Login](./screenshot/003.png)
+*Página de login, aonde você pode se cadastrar ou entrar.*
+</details>
+
+<details><summary><b>Cadastro</b></summary>
+   
+![Login](./screenshot/004.png)
+*Página de cadastro, quando cadastrado, seus dados vão para o banco de dados.*
+</details>
 
 <details><summary><b>Início</b></summary>
    
