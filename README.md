@@ -1,6 +1,15 @@
 # CM3 Shop
 CM3 Shop é uma **loja fictícia** desenvolvida para fins educativos e experimentais. O projeto simula uma plataforma de e-commerce, permitindo que os usuários interajam com uma interface que inclui navegação por produtos, adição ao carrinho e processo de "checkout", embora não realize transações reais. O foco é fornecer uma experiência de simulação de compras online, com ênfase no design e na funcionalidade do sistema.
 
+![PHP](https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white)
+![HTML](https://img.shields.io/badge/HTML-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![CSS](https://img.shields.io/badge/CSS-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![MySQL](https://img.shields.io/badge/MySQL-00758F?style=for-the-badge&logo=mysql&logoColor=white)
+
+
+
 ## Catálogo
 
 - [Funcionalidades](#funcionalidades)
