@@ -105,7 +105,7 @@ if (isset($_POST['usuario']) && isset($_POST['senha'])) {
             <br><br>  
             <button type="submit">Entrar</button>
             <button type="button" onclick="window.location.href='cadastrar.php'">Cadastrar-se</button>
-            <p><a href="#!">Esqueci minha Senha</a></p>
+            <p><a href="esquecisenha.php">Esqueci minha Senha</a></p>
 
             <!-- Exibir mensagem de erro -->
             <?php if (!empty($mensagem)) { ?>

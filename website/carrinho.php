@@ -1,191 +1,201 @@
 <?php
 session_start();
-if (!isset($_SESSION['id'])) {
-    header("Location: login.php");
+
+// Adicionar produto ao carrinho
+if (isset($_GET['id']) && isset($_GET['preco']) && isset($_GET['imagem']) && isset($_GET['nome'])) {
+    $produtoId = $_GET['id']; // ID do produto
+    $produtoNome = $_GET['nome']; // Nome do produto
+    $produtoPreco = $_GET['preco'];
+    $produtoImagem = $_GET['imagem'];
+
+    if (!isset($_SESSION['carrinho'])) {
+        $_SESSION['carrinho'] = [];
+    }
+
+    // Verifica se o produto já existe no carrinho
+    $existe = false;
+    foreach ($_SESSION['carrinho'] as &$produto) {
+        if ($produto['id'] === $produtoId) { // Agora com id
+            $produto['quantidade']++;
+            $existe = true;
+            break;
+        }
+    }
+    unset($produto); // Evita problemas com referência
+
+    // Se não existir, adiciona o produto novo
+    if (!$existe) {
+        $_SESSION['carrinho'][] = [
+            'id' => $produtoId, // Adicionando o ID
+            'nome' => $produtoNome,
+            'preco' => $produtoPreco,
+            'imagem' => $produtoImagem,
+            'quantidade' => 1
+        ];
+    }
+
+    // Redireciona de volta para o carrinho
+    header("Location: carrinho.php");
+    exit();
+}
+
+// Remover item do carrinho
+if (isset($_GET['remover'])) {
+    $indice = $_GET['remover'];
+
+    if (isset($_SESSION['carrinho'][$indice])) {
+        $_SESSION['carrinho'][$indice]['quantidade']--;
+        if ($_SESSION['carrinho'][$indice]['quantidade'] <= 0) {
+            unset($_SESSION['carrinho'][$indice]);
+            $_SESSION['carrinho'] = array_values($_SESSION['carrinho']); // Reorganiza os índices do array
+        }
+    }
+
+    // Redireciona de volta para o carrinho
+    header("Location: carrinho.php");
     exit();
 }
 ?>
 
 <!doctype html>
 <html lang="pt-br">
-    <head>
-        <title>Carrinho</title>
-        <!-- Required meta tags -->
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-
-        <!-- Bootstrap CSS v5.2.1 -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    </head>
+<head>
+    <title>Carrinho</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-    body {
-        background-color: #121212;
-        color: #e0e0e0;
-        font-family: 'Poppins', sans-serif;
-    }
-
-    header {
-        background-color: #1f1f1f;
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-        position: sticky;
-        top: 0;
-        z-index: 1050;
-        width: 100%;
-    }
-
-    .nav-brand {
-        width: 140px;
-        height: 100px;
-    }
-
-    .navbar-toggler-icon {
-        font-size: 20px;
-    }
-
-    ul {
-        font-size: 20px;
-    }
-
-    footer {
-        background-color: #1e1e1e;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        width: 100%;
-        height: 100px;
-        text-align: center;
-        color: white;
-        line-height: 60px;
-    }
-
-    .card {
-        background-color: #333;
-        border: none;
-        color: #e0e0e0;
-    }
-
-    .card-header {
-        background-color: #444;
-    }
-
-    .card-body {
-        background-color: #555;
-    }
-
-    /* Ajuste de alinhamento e estilo do ícone de perfil */
-    .perfil-container {
-        position: relative;
-        display: flex;
-        align-items: center;
-    }
-
-    .perfil-container a {
-        cursor: pointer;
-    }
-    .perfil-container i {
-    margin-right: 10px; /* Ajuste o valor para o espaçamento desejado */
-    }
-
-    .dropdown-menu {
-        display: none;
-        position: absolute;
-        top: 40px;
-        right: 0;
-        background-color: #333;
-        color: #fff;
-        padding: 10px;
-        border-radius: 5px;
-        width: 200px;
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    .dropdown-menu a {
-        color: #fff;
-        text-decoration: none;
-        display: block;
-        padding: 8px;
-        border-bottom: 1px solid #444;
-    }
-
-    .dropdown-menu a:hover {
-        background-color: #444;
-    }
-
-    .dropdown-menu p {
-        margin: 0;
-        padding-bottom: 5px;
-    }
-
-    .dropdown-menu hr {
-        margin: 5px 0;
-        border: 0;
-        border-top: 1px solid #444;
-    }
-
-    /* Ajuste para alinhar o ícone da casa */
-    .navbar-nav a {
-        display: flex;
-        align-items: center;
-    }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        header {
+            background-color: #1f1f1f;
+            width: 100%;
+            padding: 10px 0;
+        }
+        .container { flex: 1; padding-bottom: 50px; }
+        footer {
+            background-color: #1f1f1f;
+            text-align: center;
+            padding: 10px;
+            width: 100%;
+            position: relative;
+            bottom: 0;
+        }
+        .card {
+            background-color: #1f1f1f;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease;
+            margin-top: 15px;
+        }
+        .card:hover { transform: scale(1.05); }
+        .card-img-top {
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            height: 250px;
+            object-fit: cover;
+        }
+        .card-body { text-align: center; }
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+        .card-text {
+            font-size: 16px;
+            color: #64ffda;
+            font-weight: bold;
+        }
+        .btn-primary, .btn-danger {
+            border: none;
+            font-weight: bold;
+            transition: 0.3s;
+            border-radius: 8px;
+            padding: 10px 15px;
+        }
+        .btn-primary {
+            background-color: #64ffda;
+            color: #121212;
+        }
+        .btn-primary:hover { background-color: #52e0c4; }
+        .btn-danger {
+            background-color: #ff4d4d;
+            color: white;
+        }
+        .btn-danger:hover { background-color: #ff3333; }
+        .no-items {
+            font-size: 18px;
+            text-align: center;
+            margin-top: 30px;
+            color: #ffffff;
+        }
+        .no-items a {
+            color: #64ffda;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .no-items a:hover { color: #52e0c4; }
     </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg sticky-top">
+            <div class="container">
+                <img src="assets/cm3.png" class="nav-brand me-auto" style="width: 140px; height: 100;">
+                <a href="painel.php" class="ms-auto btn btn-primary">
+                    <i class="fa-solid fa-arrow-left"></i> Voltar às Compras
+                </a>
+            </div>
+        </nav>
+    </header>
 
-    <body>
-        <header>
-            <nav class="navbar navbar-expand-lg sticky-top">
-                <div class="container">
-                    <img src="assets/cm3.png" class="nav-brand me-auto">
-                    <div class="ms-auto d-flex align-items-center">
-                        <div class="ms-auto perfil-container">
-                            <a href="#" onclick="toggleDropdown(event)">
-                                <i class="fa-solid fa-circle-user fa-2x" style="color: #ffffff;"></i>
-                            </a>
-                            <div class="dropdown-menu" id="dropdown">
-                                <p>👤 <strong><?php echo isset($_SESSION['nome']) ? $_SESSION['nome'] : 'Usuário'; ?></strong></p>
-                                <hr>
-                                <a href="logout.php">Sair</a>
+    <div class="container">
+        <h2 class="mt-5 text-center">🛒 Carrinho de Compras</h2>
+        <?php if (!empty($_SESSION['carrinho'])) { ?>
+            <div class="row">
+                <?php foreach ($_SESSION['carrinho'] as $indice => $item) { ?>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <!-- A imagem agora é dinâmica e vem do produto -->
+                            <img src="<?php echo $item['imagem']; ?>" class="card-img-top" alt="Produto">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <?php echo $item['nome']; ?> 
+                                    <?php if ($item['quantidade'] > 1) { ?>
+                                        <span style="color: #64ffda;">(<?php echo $item['quantidade']; ?>x)</span>
+                                    <?php } ?>
+                                </h5>
+                                <p class="card-text">R$ <?php echo number_format($item['preco'], 2, ',', '.'); ?></p>
+                                <a href="carrinho.php?remover=<?php echo $indice; ?>" class="btn btn-danger">
+                                    <i class="fa-solid fa-minus"></i> Remover 1
+                                </a>
                             </div>
                         </div>
-                        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                            <li class="nav-item">
-                                <a href="painel.php" class="nav-link">
-                                    <i class="fa-solid fa-house fa-xl" style="color: white"></i>
-                                </a>
-                            </li>
-                        </ul>
                     </div>
-                </div>
-            </nav>
-        </header>
-        <main>
-            <div class="container text-center mt-5">
-                <h2 class="fw-bold mt-2" style="color: white">Seu carrinho</h2>
-                
-                <div class="p-4 mt-5" style="background-color: #121212;">
-                    <img src="https://www.havan.com.br/static/version1743118210/frontend/Havan/themeDefault/pt_BR/images/svg/empty-cart-img.svg" 
-                        alt="Empty cart" width="150" class="mx-auto d-block">
-
-                    <p class="fw-bold mt-3 text-white">Você não possui nenhum item em seu carrinho de compras.</p>
-                    <p class="text-white">Vamos explorar inúmeras ofertas e encontrar uma ideal para você.</p>
-                </div>
+                <?php } ?>
             </div>
-        </main>
-        <footer>
-            <div class="container px-5"><p class="m-0 text-center text-white">&copy; 2025 CM3 - Todos os direitos reservados</p></div>
-        </footer>
-        <script>
-            function toggleDropdown(event) {
-                event.preventDefault();
-                var dropdown = document.getElementById("dropdown");
-                dropdown.style.display = (dropdown.style.display === "block") ? "none" : "block";
-            }
-            document.addEventListener("click", function(event) {
-                var dropdown = document.getElementById("dropdown");
-                if (!event.target.closest(".perfil-container")) {
-                    dropdown.style.display = "none";
-                }
-            });
-        </script>
-    </body>
+        <?php } else { ?>
+            <p class="no-items">Seu carrinho está vazio. <a href="painel.php">Voltar às compras</a></p>
+        <?php } ?>
+    </div>
+
+    <?php if (!empty($_SESSION['carrinho'])) { ?>
+        <!-- Finalizar Compra -->
+        <div class="text-center mt-4">
+            <a href="finalizar.php" class="btn btn-success btn-lg mb-3">Finalizar Compra</a>
+        </div>
+    <?php } ?>
+    
+    <footer>
+        <p>&copy; 2025 CM3 - Todos os direitos reservados</p>
+    </footer>
+</body>
 </html>
