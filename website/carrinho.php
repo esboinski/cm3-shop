@@ -37,7 +37,7 @@ if (isset($_GET['id']) && isset($_GET['preco']) && isset($_GET['imagem']) && iss
                 break;
             }
         }
-        unset($produtoCarrinho); // Evita problemas com referência
+        unset($produtoCarrinho);
 
         if (!$existe) {
             if ($estoqueDisponivel <= 0) {
@@ -67,10 +67,9 @@ if (isset($_GET['remover'])) {
     if (isset($_SESSION['carrinho'][$indice])) {
         $_SESSION['carrinho'][$indice]['quantidade']--;
 
-        // Se a quantidade for 0, remove o item do carrinho
         if ($_SESSION['carrinho'][$indice]['quantidade'] <= 0) {
             unset($_SESSION['carrinho'][$indice]);
-            $_SESSION['carrinho'] = array_values($_SESSION['carrinho']); // Reorganiza os índices do array
+            $_SESSION['carrinho'] = array_values($_SESSION['carrinho']);
         }
     }
 
@@ -143,15 +142,6 @@ if (isset($_GET['remover'])) {
             border-radius: 8px;
             padding: 10px 15px;
         }
-        .btn-primary {
-            background-color: #64ffda;
-            color: #121212;
-        }
-        .btn-primary:hover { background-color: #52e0c4; }
-        .btn-danger {
-            background-color: #ff4d4d;
-            color: white;
-        }
         .btn-danger:hover { background-color: #ff3333; }
         .no-items {
             font-size: 18px;
@@ -178,7 +168,6 @@ if (isset($_GET['remover'])) {
             </div>
         </nav>
     </header>
-
     <div class="container">
         <h2 class="mt-5 text-center">🛒 Carrinho de Compras</h2>
         <?php if (!empty($_SESSION['carrinho'])) { ?>
@@ -186,19 +175,12 @@ if (isset($_GET['remover'])) {
                 <?php foreach ($_SESSION['carrinho'] as $indice => $item) { ?>
                     <div class="col-md-4">
                         <div class="card">
-                            <!-- A imagem agora é dinâmica e vem do produto -->
                             <img src="<?php echo $item['imagem']; ?>" class="card-img-top" alt="Produto">
                             <div class="card-body">
-                                <h5 class="card-title">
-                                    <?php echo $item['nome']; ?> 
-                                    <?php if ($item['quantidade'] > 1) { ?>
-                                        <span style="color: #64ffda;">(<?php echo $item['quantidade']; ?>x)</span>
-                                    <?php } ?>
-                                </h5>
+                                <h5 class="card-title"> <?php echo $item['nome']; ?> <span style="color: #64ffda;">(<?php echo $item['quantidade']; ?>x)</span></h5>
                                 <p class="card-text">R$ <?php echo number_format($item['preco'], 2, ',', '.'); ?></p>
-                                <a href="carrinho.php?remover=<?php echo $indice; ?>" class="btn btn-danger">
-                                    <i class="fa-solid fa-minus"></i> Remover 1
-                                </a>
+                                <a href="carrinho.php?id=<?php echo $item['id']; ?>&nome=<?php echo $item['nome']; ?>&preco=<?php echo $item['preco']; ?>&imagem=<?php echo $item['imagem']; ?>" class="btn btn-success">+</a>
+                                <a href="carrinho.php?remover=<?php echo $indice; ?>" class="btn btn-danger">-</a>
                             </div>
                         </div>
                     </div>
