@@ -11,11 +11,13 @@ require_once 'conexao.php'; // Aqui você importa a conexão com o banco de dado
 
 <!doctype html>
 <html lang="pt-br">
+
 <head>
     <title>Loja</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body {
@@ -23,6 +25,7 @@ require_once 'conexao.php'; // Aqui você importa a conexão com o banco de dado
             color: #ffffff;
             font-family: 'Poppins', sans-serif;
         }
+
         header {
             background-color: #1f1f1f;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
@@ -31,31 +34,44 @@ require_once 'conexao.php'; // Aqui você importa a conexão com o banco de dado
             z-index: 1050;
             width: 100%;
         }
+
         .nav-brand {
             width: 140px;
             height: 100px;
         }
+
         .card {
             background-color: #1f1f1f;
             border-radius: 10px;
             transition: transform 0.3s ease;
         }
+
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
         .card:hover {
             transform: scale(1.05);
         }
+
         .card-img-top {
             border-top-left-radius: 10px;
             border-top-right-radius: 10px;
             height: 300px;
             object-fit: cover;
         }
+
         .card-text {
             color: #64ffda;
             font-weight: bold;
         }
+
         .card-title {
             color: #ffffff;
         }
+
         .btn-primary {
             background-color: #64ffda;
             border: none;
@@ -63,13 +79,16 @@ require_once 'conexao.php'; // Aqui você importa a conexão com o banco de dado
             font-weight: bold;
             transition: 0.3s;
         }
+
         .btn-primary:hover {
             background-color: #52e0c4;
         }
+
         .perfil-container {
             position: relative;
             display: inline-block;
         }
+
         .dropdown-menu {
             display: none;
             position: absolute;
@@ -82,6 +101,7 @@ require_once 'conexao.php'; // Aqui você importa a conexão com o banco de dado
             padding: 10px;
             z-index: 10;
         }
+
         .dropdown-menu a {
             color: white;
             text-decoration: none;
@@ -89,20 +109,24 @@ require_once 'conexao.php'; // Aqui você importa a conexão com o banco de dado
             padding: 8px;
             border-radius: 5px;
         }
+
         .dropdown-menu a:hover {
             background-color: #64ffda;
             color: #121212;
         }
+
         footer {
             background-color: #1f1f1f;
             text-align: center;
             padding: 10px;
         }
+
         p {
             color: #ffffff;
         }
     </style>
 </head>
+
 <body>
     <header>
         <nav class="navbar navbar-expand-lg sticky-top">
@@ -113,7 +137,8 @@ require_once 'conexao.php'; // Aqui você importa a conexão com o banco de dado
                         <i class="fa-solid fa-circle-user fa-2x" style="color: #ffffff;"></i>
                     </a>
                     <div class="dropdown-menu" id="dropdown">
-                        <p>👤 <strong><?php echo isset($_SESSION['nome']) ? $_SESSION['nome'] : 'Usuário'; ?></strong></p>
+                        <p>👤 <strong><?php echo isset($_SESSION['nome']) ? $_SESSION['nome'] : 'Usuário'; ?></strong>
+                        </p>
                         <hr>
                         <a href="logout.php">Sair</a>
                     </div>
@@ -129,7 +154,7 @@ require_once 'conexao.php'; // Aqui você importa a conexão com o banco de dado
         <section>
             <div class="container py-5">
                 <div class="row g-4">
-                    <?php 
+                    <?php
                     // Loop pelos produtos para exibir no HTML
                     $produtos = [
                         ["id" => 1, "nome" => "Samsung Galaxy S23", "valor_venda" => "3500.00", "imagem" => "galaxys23.png"],
@@ -149,15 +174,25 @@ require_once 'conexao.php'; // Aqui você importa a conexão com o banco de dado
                         $result = $stmt->get_result();
                         $produtoEstoque = $result->fetch_assoc();
                         $quantidadeEstoque = $produtoEstoque['quantidade'] ?? 0; // Caso não encontre, assume 0
-                    ?>
+                        ?>
                         <div class="col-md-4">
                             <div class="card">
-                                <img class="card-img-top" src="assets/<?php echo $produto['imagem']; ?>" alt="<?php echo $produto['nome']; ?>">
+                                <img class="card-img-top" src="assets/<?php echo $produto['imagem']; ?>"
+                                    alt="<?php echo $produto['nome']; ?>">
                                 <div class="card-body text-center">
                                     <h5 class="card-title"><?php echo $produto['nome']; ?></h5>
-                                    <p class="card-text">R$<?php echo number_format($produto['valor_venda'], 2, ',', '.'); ?></p>
-                                    <p>Em estoque: <?php echo $quantidadeEstoque; ?></p> <!-- Exibindo quantidade do estoque -->
-                                    <a href="carrinho.php?id=<?php echo $produto['id']; ?>&preco=<?php echo urlencode($produto['valor_venda']); ?>&imagem=<?php echo urlencode('assets/' . $produto['imagem']); ?>&nome=<?php echo urlencode($produto['nome']); ?>" class="btn btn-primary">Adicionar ao Carrinho</a>
+                                    <p class="card-text">
+                                        R$<?php echo number_format($produto['valor_venda'], 2, ',', '.'); ?>
+                                    </p>
+                                    <p <?php echo ($quantidadeEstoque == 0) ? 'style="color: red; font-weight: bold;"' : ''; ?>>
+                                        <?php echo ($quantidadeEstoque == 0) ? 'Produto esgotado!' : "Em estoque: $quantidadeEstoque"; ?>
+                                    </p>
+                                    <?php if ($quantidadeEstoque > 0) { ?>
+                                        <a href="carrinho.php?id=<?php echo $produto['id']; ?>&preco=<?php echo urlencode($produto['valor_venda']); ?>&imagem=<?php echo urlencode('assets/' . $produto['imagem']); ?>&nome=<?php echo urlencode($produto['nome']); ?>"
+                                            class="btn btn-primary">Adicionar ao Carrinho</a>
+                                    <?php } else { ?>
+                                        <div style="height: 38px;"></div>
+                                    <?php } ?>
                                 </div>
                             </div>
                         </div>
@@ -178,7 +213,7 @@ require_once 'conexao.php'; // Aqui você importa a conexão com o banco de dado
             dropdown.style.display = (dropdown.style.display === "block") ? "none" : "block";
         }
 
-        document.addEventListener("click", function(event) {
+        document.addEventListener("click", function (event) {
             var dropdown = document.getElementById("dropdown");
             if (!event.target.closest(".perfil-container")) {
                 dropdown.style.display = "none";
@@ -186,4 +221,5 @@ require_once 'conexao.php'; // Aqui você importa a conexão com o banco de dado
         });
     </script>
 </body>
+
 </html>

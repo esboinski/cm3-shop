@@ -135,14 +135,17 @@ if (isset($_GET['remover'])) {
             color: #64ffda;
             font-weight: bold;
         }
-        .btn-primary, .btn-danger {
+        .btn-primary, .btn-danger, .btn-success {
             border: none;
             font-weight: bold;
             transition: 0.3s;
             border-radius: 8px;
             padding: 10px 15px;
         }
-        .btn-danger:hover { background-color: #ff3333; }
+        .btn-danger:hover {
+            background-color: #ff3333; 
+        }
+
         .no-items {
             font-size: 18px;
             text-align: center;
@@ -155,6 +158,11 @@ if (isset($_GET['remover'])) {
             font-weight: bold;
         }
         .no-items a:hover { color: #52e0c4; }
+
+        .btn-primary:hover {
+            background-color: #52e0c4 !important;
+            color:#ffffff !important;
+        }
     </style>
 </head>
 <body>
@@ -162,7 +170,7 @@ if (isset($_GET['remover'])) {
         <nav class="navbar navbar-expand-lg sticky-top">
             <div class="container">
                 <img src="assets/cm3.png" class="nav-brand me-auto" style="width: 140px; height: 100;">
-                <a href="painel.php" class="ms-auto btn btn-primary">
+                <a href="painel.php" class="ms-auto btn btn-primary" style="background-color: #64ffda; color: #121212; font-weight: bold;">
                     <i class="fa-solid fa-arrow-left"></i> Voltar às Compras
                 </a>
             </div>
@@ -179,8 +187,8 @@ if (isset($_GET['remover'])) {
                             <div class="card-body">
                                 <h5 class="card-title"> <?php echo $item['nome']; ?> <span style="color: #64ffda;">(<?php echo $item['quantidade']; ?>x)</span></h5>
                                 <p class="card-text">R$ <?php echo number_format($item['preco'], 2, ',', '.'); ?></p>
-                                <a href="carrinho.php?id=<?php echo $item['id']; ?>&nome=<?php echo $item['nome']; ?>&preco=<?php echo $item['preco']; ?>&imagem=<?php echo $item['imagem']; ?>" class="btn btn-success">+</a>
-                                <a href="carrinho.php?remover=<?php echo $indice; ?>" class="btn btn-danger">-</a>
+                                <a href="carrinho.php?id=<?php echo $item['id']; ?>&nome=<?php echo $item['nome']; ?>&preco=<?php echo $item['preco']; ?>&imagem=<?php echo $item['imagem']; ?>" class="btn btn-success" style="height: 40px;">Adicionar</a>
+                                <a href="carrinho.php?remover=<?php echo $indice; ?>" class="btn btn-danger" style="height: 40px;">Remover</a>
                             </div>
                         </div>
                     </div>
