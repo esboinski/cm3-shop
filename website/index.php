@@ -40,7 +40,7 @@ if (isset($_POST['usuario']) && isset($_POST['senha'])) {
     <style>
         body {
             font-family: Arial, Helvetica, sans-serif;
-            background-image: linear-gradient(45deg, black, #0c1c33);
+            background-image: linear-gradient(45deg, black, #121212);
         }
         .tela-login {
             background-color: rgba(0, 0, 0, 0.8);
@@ -64,20 +64,23 @@ if (isset($_POST['usuario']) && isset($_POST['senha'])) {
             width: 270px;
         }
         button {
-            background-color: #0c1c33;
+            background-color: #64ffda;
             border: none;
             outline: none;
             padding: 16px;
             width: 300px;
             border-radius: 12px;
-            color: white;
+            color: black;
             font-size: 20px;
             margin-top: 10px;
             cursor: pointer;
             display:grid;
+            font-weight: bold;
+            transition: 0.3s;
         }
         button:hover {
-            background-color: deepskyblue;
+            background-color: #52e0c4;
+            color:white;
         }
         p {
             text-align: center;

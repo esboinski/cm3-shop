@@ -46,7 +46,7 @@ try {
 <style>
     body {
         font-family: Arial, Helvetica, sans-serif;
-        background-image: linear-gradient(45deg, black, #0c1c33);
+        background-image: linear-gradient(45deg, black, #121212);
     }
 
     .tela-cadastro {
@@ -74,20 +74,23 @@ try {
     }
 
     button {
-        background-color: #0c1c33;
+        background-color: #64ffda;
         border: none;
         outline: none;
         padding: 16px;
         width: 300px;
         border-radius: 12px;
-        color: white;
+        color: black;
         font-size: 20px;
         margin-top: 10px;
         cursor: pointer;
+        transition: 0.3s;
+        font-weight: bold;
     }
 
     button:hover {
-        background-color: deepskyblue;
+        background-color: #52e0c4;
+        color:white;
     }
 
     .mensagem {
