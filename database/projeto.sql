@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 27/03/2025 às 18:11
+-- Tempo de geração: 03/04/2025 às 19:23
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -37,7 +37,7 @@ CREATE TABLE `produto` (
   `valor_compra` decimal(10,2) NOT NULL,
   `valor_venda` decimal(10,2) NOT NULL,
   `quantidade` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ;
 
 --
 -- Despejando dados para a tabela `produto`
@@ -73,7 +73,8 @@ INSERT INTO `usuarios` (`id`, `usuario`, `senha`) VALUES
 (2, 'maria_silva', '1234abcd'),
 (3, 'user2025', 'qwerty!@#'),
 (4, 'alexandre321', 'Meu$uperSenha'),
-(5, 'fernanda.santos', 'Pass123!');
+(5, 'fernanda.santos', 'Pass123!'),
+(6, 'matheus', '1234');
 
 --
 -- Índices para tabelas despejadas
@@ -99,13 +100,13 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de tabela `produto`
 --
 ALTER TABLE `produto`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
