@@ -1,40 +1,61 @@
 <?php
 session_start();
+include 'conexao.php'; // Conectar ao banco de dados
+
+// Inicializa o carrinho se não existir
+if (!isset($_SESSION['carrinho'])) {
+    $_SESSION['carrinho'] = [];
+}
 
 // Adicionar produto ao carrinho
 if (isset($_GET['id']) && isset($_GET['preco']) && isset($_GET['imagem']) && isset($_GET['nome'])) {
-    $produtoId = $_GET['id']; // ID do produto
-    $produtoNome = $_GET['nome']; // Nome do produto
+    $produtoId = $_GET['id'];
+    $produtoNome = $_GET['nome'];
     $produtoPreco = $_GET['preco'];
     $produtoImagem = $_GET['imagem'];
 
-    if (!isset($_SESSION['carrinho'])) {
-        $_SESSION['carrinho'] = [];
-    }
+    // Buscar a quantidade disponível no banco
+    $sql = "SELECT quantidade FROM produto WHERE id = ?";
+    $stmt = $mysqli->prepare($sql);
+    $stmt->bind_param("i", $produtoId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $produto = $result->fetch_assoc();
 
-    // Verifica se o produto já existe no carrinho
-    $existe = false;
-    foreach ($_SESSION['carrinho'] as &$produto) {
-        if ($produto['id'] === $produtoId) { // Agora com id
-            $produto['quantidade']++;
-            $existe = true;
-            break;
+    if ($produto) {
+        $estoqueDisponivel = (int)$produto['quantidade'];
+
+        $existe = false;
+        foreach ($_SESSION['carrinho'] as &$produtoCarrinho) {
+            if ($produtoCarrinho['id'] == $produtoId) {
+                if ($produtoCarrinho['quantidade'] + 1 > $estoqueDisponivel) {
+                    echo "<script>alert('Estoque insuficiente! Apenas $estoqueDisponivel unidades disponíveis.'); window.location.href='painel.php';</script>";
+                    exit();
+                }
+                $produtoCarrinho['quantidade']++;
+                $existe = true;
+                break;
+            }
         }
-    }
-    unset($produto); // Evita problemas com referência
+        unset($produtoCarrinho); // Evita problemas com referência
 
-    // Se não existir, adiciona o produto novo
-    if (!$existe) {
-        $_SESSION['carrinho'][] = [
-            'id' => $produtoId, // Adicionando o ID
-            'nome' => $produtoNome,
-            'preco' => $produtoPreco,
-            'imagem' => $produtoImagem,
-            'quantidade' => 1
-        ];
+        if (!$existe) {
+            if ($estoqueDisponivel <= 0) {
+                echo "<script>alert('Produto esgotado!'); window.location.href='painel.php';</script>";
+                exit();
+            }
+            $_SESSION['carrinho'][] = [
+                'id' => $produtoId,
+                'nome' => $produtoNome,
+                'preco' => $produtoPreco,
+                'imagem' => $produtoImagem,
+                'quantidade' => 1
+            ];
+        }
+    } else {
+        echo "<script>alert('Produto não encontrado!'); window.location.href='painel.php';</script>";
     }
 
-    // Redireciona de volta para o carrinho
     header("Location: carrinho.php");
     exit();
 }
@@ -45,13 +66,14 @@ if (isset($_GET['remover'])) {
 
     if (isset($_SESSION['carrinho'][$indice])) {
         $_SESSION['carrinho'][$indice]['quantidade']--;
+
+        // Se a quantidade for 0, remove o item do carrinho
         if ($_SESSION['carrinho'][$indice]['quantidade'] <= 0) {
             unset($_SESSION['carrinho'][$indice]);
             $_SESSION['carrinho'] = array_values($_SESSION['carrinho']); // Reorganiza os índices do array
         }
     }
 
-    // Redireciona de volta para o carrinho
     header("Location: carrinho.php");
     exit();
 }
