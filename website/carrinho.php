@@ -10,7 +10,8 @@ if (!isset($_SESSION['carrinho'])) {
 // Adicionar produto ao carrinho
 if (isset($_GET['id']) && isset($_GET['preco']) && isset($_GET['imagem']) && isset($_GET['nome'])) {
     $produtoId = $_GET['id'];
-    $produtoNome = $_GET['nome'];
+    $produtoNome = urldecode($_GET['nome']);
+    $produtoNome = htmlspecialchars($produtoNome, ENT_QUOTES, 'UTF-8');
     $produtoPreco = $_GET['preco'];
     $produtoImagem = $_GET['imagem'];
 
@@ -23,27 +24,30 @@ if (isset($_GET['id']) && isset($_GET['preco']) && isset($_GET['imagem']) && iss
     $produto = $result->fetch_assoc();
 
     if ($produto) {
-        $estoqueDisponivel = (int)$produto['quantidade'];
+        $estoqueDisponivel = (int) $produto['quantidade'];
 
         $existe = false;
         foreach ($_SESSION['carrinho'] as &$produtoCarrinho) {
             if ($produtoCarrinho['id'] == $produtoId) {
+                // Verificar se há estoque suficiente para adicionar mais 1 unidade
                 if ($produtoCarrinho['quantidade'] + 1 > $estoqueDisponivel) {
                     echo "<script>alert('Estoque insuficiente! Apenas $estoqueDisponivel unidades disponíveis.'); window.location.href='painel.php';</script>";
                     exit();
                 }
+                // Se existir, aumenta a quantidade do produto
                 $produtoCarrinho['quantidade']++;
                 $existe = true;
                 break;
             }
         }
-        unset($produtoCarrinho);
 
+        // Se não existir, adiciona o produto no carrinho com quantidade 1
         if (!$existe) {
             if ($estoqueDisponivel <= 0) {
                 echo "<script>alert('Produto esgotado!'); window.location.href='painel.php';</script>";
                 exit();
             }
+
             $_SESSION['carrinho'][] = [
                 'id' => $produtoId,
                 'nome' => $produtoNome,
@@ -52,9 +56,8 @@ if (isset($_GET['id']) && isset($_GET['preco']) && isset($_GET['imagem']) && iss
                 'quantidade' => 1
             ];
         }
-    } else {
-        echo "<script>alert('Produto não encontrado!'); window.location.href='painel.php';</script>";
     }
+
 
     header("Location: carrinho.php");
     exit();
@@ -80,6 +83,7 @@ if (isset($_GET['remover'])) {
 
 <!doctype html>
 <html lang="pt-br">
+
 <head>
     <title>Carrinho</title>
     <meta charset="utf-8" />
@@ -87,7 +91,12 @@ if (isset($_GET['remover'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             background-color: #121212;
             color: #ffffff;
@@ -96,12 +105,18 @@ if (isset($_GET['remover'])) {
             flex-direction: column;
             min-height: 100vh;
         }
+
         header {
             background-color: #1f1f1f;
             width: 100%;
             padding: 10px 0;
         }
-        .container { flex: 1; padding-bottom: 50px; }
+
+        .container {
+            flex: 1;
+            padding-bottom: 50px;
+        }
+
         footer {
             background-color: #1f1f1f;
             text-align: center;
@@ -110,6 +125,7 @@ if (isset($_GET['remover'])) {
             position: relative;
             bottom: 0;
         }
+
         .card {
             background-color: #1f1f1f;
             border-radius: 10px;
@@ -117,33 +133,46 @@ if (isset($_GET['remover'])) {
             transition: transform 0.3s ease;
             margin-top: 15px;
         }
-        .card:hover { transform: scale(1.05); }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+
         .card-img-top {
             border-top-left-radius: 10px;
             border-top-right-radius: 10px;
             height: 250px;
             object-fit: cover;
         }
-        .card-body { text-align: center; }
+
+        .card-body {
+            text-align: center;
+        }
+
         .card-title {
             font-size: 18px;
             font-weight: bold;
             color: #ffffff;
         }
+
         .card-text {
             font-size: 16px;
             color: #64ffda;
             font-weight: bold;
         }
-        .btn-primary, .btn-danger, .btn-success {
+
+        .btn-primary,
+        .btn-danger,
+        .btn-success {
             border: none;
             font-weight: bold;
             transition: 0.3s;
             border-radius: 8px;
             padding: 10px 15px;
         }
+
         .btn-danger:hover {
-            background-color: #ff3333; 
+            background-color: #ff3333;
         }
 
         .no-items {
@@ -152,25 +181,31 @@ if (isset($_GET['remover'])) {
             margin-top: 30px;
             color: #ffffff;
         }
+
         .no-items a {
             color: #64ffda;
             text-decoration: none;
             font-weight: bold;
         }
-        .no-items a:hover { color: #52e0c4; }
+
+        .no-items a:hover {
+            color: #52e0c4;
+        }
 
         .btn-primary:hover {
             background-color: #52e0c4 !important;
-            color:#ffffff !important;
+            color: #ffffff !important;
         }
     </style>
 </head>
+
 <body>
     <header>
         <nav class="navbar navbar-expand-lg sticky-top">
             <div class="container">
                 <img src="assets/cm3.png" class="nav-brand me-auto" style="width: 140px; height: 100;">
-                <a href="painel.php" class="ms-auto btn btn-primary" style="background-color: #64ffda; color: #121212; font-weight: bold;">
+                <a href="painel.php" class="ms-auto btn btn-primary"
+                    style="background-color: #64ffda; color: #121212; font-weight: bold;">
                     <i class="fa-solid fa-arrow-left"></i> Voltar às Compras
                 </a>
             </div>
@@ -185,10 +220,13 @@ if (isset($_GET['remover'])) {
                         <div class="card">
                             <img src="<?php echo $item['imagem']; ?>" class="card-img-top" alt="Produto">
                             <div class="card-body">
-                                <h5 class="card-title"> <?php echo $item['nome']; ?> <span style="color: #64ffda;">(<?php echo $item['quantidade']; ?>x)</span></h5>
+                                <h5 class="card-title"> <?php echo $item['nome']; ?> <span
+                                        style="color: #64ffda;">(<?php echo $item['quantidade']; ?>x)</span></h5>
                                 <p class="card-text">R$ <?php echo number_format($item['preco'], 2, ',', '.'); ?></p>
-                                <a href="carrinho.php?id=<?php echo $item['id']; ?>&nome=<?php echo $item['nome']; ?>&preco=<?php echo $item['preco']; ?>&imagem=<?php echo $item['imagem']; ?>" class="btn btn-success" style="height: 40px;">Adicionar</a>
-                                <a href="carrinho.php?remover=<?php echo $indice; ?>" class="btn btn-danger" style="height: 40px;">Remover</a>
+                                <a href="carrinho.php?id=<?php echo $item['id']; ?>&nome=<?php echo $item['nome']; ?>&preco=<?php echo $item['preco']; ?>&imagem=<?php echo $item['imagem']; ?>"
+                                    class="btn btn-success" style="height: 40px;">Adicionar</a>
+                                <a href="carrinho.php?remover=<?php echo $indice; ?>" class="btn btn-danger"
+                                    style="height: 40px;">Remover</a>
                             </div>
                         </div>
                     </div>
@@ -205,9 +243,10 @@ if (isset($_GET['remover'])) {
             <a href="finalizar.php" class="btn btn-success btn-lg mb-3">Finalizar Compra</a>
         </div>
     <?php } ?>
-    
+
     <footer>
         <p>&copy; 2025 CM3 - Todos os direitos reservados</p>
     </footer>
 </body>
+
 </html>

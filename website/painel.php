@@ -5,8 +5,7 @@ if (!isset($_SESSION['id'])) {
     exit();
 }
 
-require_once 'conexao.php'; // Aqui você importa a conexão com o banco de dados
-
+require_once 'conexao.php';
 ?>
 
 <!doctype html>
@@ -16,8 +15,7 @@ require_once 'conexao.php'; // Aqui você importa a conexão com o banco de dado
     <title>Loja</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        crossorigin="anonymous" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body {
@@ -137,8 +135,7 @@ require_once 'conexao.php'; // Aqui você importa a conexão com o banco de dado
                         <i class="fa-solid fa-circle-user fa-2x" style="color: #ffffff;"></i>
                     </a>
                     <div class="dropdown-menu" id="dropdown">
-                        <p>👤 <strong><?php echo isset($_SESSION['nome']) ? $_SESSION['nome'] : 'Usuário'; ?></strong>
-                        </p>
+                        <p>👤 <strong><?php echo isset($_SESSION['nome']) ? $_SESSION['nome'] : 'Usuário'; ?></strong></p>
                         <hr>
                         <a href="logout.php">Sair</a>
                     </div>
@@ -155,48 +152,43 @@ require_once 'conexao.php'; // Aqui você importa a conexão com o banco de dado
             <div class="container py-5">
                 <div class="row g-4">
                     <?php
-                    // Loop pelos produtos para exibir no HTML
-                    $produtos = [
-                        ["id" => 1, "nome" => "Samsung Galaxy S23", "valor_venda" => "3500.00", "imagem" => "galaxys23.png"],
-                        ["id" => 2, "nome" => "Notebook Dell Inspiron 15", "valor_venda" => "4800.00", "imagem" => "notebook.jpg"],
-                        ["id" => 3, "nome" => "Televisão LG 50\" 4K", "valor_venda" => "3500.00", "imagem" => "lg50.avif"],
-                        ["id" => 4, "nome" => "Fone de Ouvido JBL", "valor_venda" => "500.00", "imagem" => "jbl.webp"],
-                        ["id" => 5, "nome" => "Câmera Digital Canon EOS R5", "valor_venda" => "16000.00", "imagem" => "camera.jpg"],
-                        ["id" => 6, "nome" => "Smartwatch Apple Watch Series 8", "valor_venda" => "3500.00", "imagem" => "relogio.jpg"]
+                    // Mapear imagens por ID
+                    $imagens = [
+                        1 => "galaxys23.png",
+                        2 => "notebook.jpg",
+                        3 => "lg50.avif",
+                        4 => "jbl.webp",
+                        5 => "camera.jpg",
+                        6 => "relogio.jpg"
                     ];
 
-                    foreach ($produtos as $produto) {
-                        // Consulta para pegar a quantidade do estoque do banco de dados usando $mysqli
-                        $sql = "SELECT quantidade FROM produto WHERE id = ?";
-                        $stmt = $mysqli->prepare($sql);
-                        $stmt->bind_param("i", $produto['id']);
-                        $stmt->execute();
-                        $result = $stmt->get_result();
-                        $produtoEstoque = $result->fetch_assoc();
-                        $quantidadeEstoque = $produtoEstoque['quantidade'] ?? 0; // Caso não encontre, assume 0
-                        ?>
+                    $sql = "SELECT id, nome, valor_venda, quantidade FROM produto";
+                    $resultado = $mysqli->query($sql);
+
+                    while ($produto = $resultado->fetch_assoc()) {
+                        $imagem = isset($imagens[$produto['id']]) ? $imagens[$produto['id']] : 'sem-imagem.png';
+                        $quantidadeEstoque = $produto['quantidade'];
+                    ?>
                         <div class="col-md-4">
                             <div class="card">
-                                <img class="card-img-top" src="assets/<?php echo $produto['imagem']; ?>"
-                                    alt="<?php echo $produto['nome']; ?>">
+                                <img class="card-img-top" src="assets/<?php echo $imagem; ?>" alt="<?php echo htmlspecialchars($produto['nome']); ?>">
                                 <div class="card-body text-center">
-                                    <h5 class="card-title"><?php echo $produto['nome']; ?></h5>
-                                    <p class="card-text">
-                                        R$<?php echo number_format($produto['valor_venda'], 2, ',', '.'); ?>
-                                    </p>
+                                    <h5 class="card-title"><?php echo htmlspecialchars($produto['nome']); ?></h5>
+                                    <p class="card-text">R$<?php echo number_format($produto['valor_venda'], 2, ',', '.'); ?></p>
                                     <p <?php echo ($quantidadeEstoque == 0) ? 'style="color: red; font-weight: bold;"' : ''; ?>>
                                         <?php echo ($quantidadeEstoque == 0) ? 'Produto esgotado!' : "Em estoque: $quantidadeEstoque"; ?>
                                     </p>
                                     <?php if ($quantidadeEstoque > 0) { ?>
-                                        <a href="carrinho.php?id=<?php echo $produto['id']; ?>&preco=<?php echo urlencode($produto['valor_venda']); ?>&imagem=<?php echo urlencode('assets/' . $produto['imagem']); ?>&nome=<?php echo urlencode($produto['nome']); ?>"
-                                            class="btn btn-primary">Adicionar ao Carrinho</a>
+                                        <a href="carrinho.php?id=<?php echo $produto['id']; ?>&preco=<?php echo urlencode($produto['valor_venda']); ?>&imagem=<?php echo urlencode("assets/$imagem"); ?>&nome=<?php echo urlencode($produto['nome']); ?>" class="btn btn-primary">Adicionar ao Carrinho</a>
                                     <?php } else { ?>
                                         <div style="height: 38px;"></div>
                                     <?php } ?>
                                 </div>
                             </div>
                         </div>
-                    <?php } ?>
+                    <?php
+                    }
+                    ?>
                 </div>
             </div>
         </section>
@@ -213,7 +205,7 @@ require_once 'conexao.php'; // Aqui você importa a conexão com o banco de dado
             dropdown.style.display = (dropdown.style.display === "block") ? "none" : "block";
         }
 
-        document.addEventListener("click", function (event) {
+        document.addEventListener("click", function(event) {
             var dropdown = document.getElementById("dropdown");
             if (!event.target.closest(".perfil-container")) {
                 dropdown.style.display = "none";
